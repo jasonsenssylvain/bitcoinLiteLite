@@ -1,6 +1,9 @@
 package tool
 
-import "crypto/sha256"
+import (
+	"crypto/rand"
+	"crypto/sha256"
+)
 
 //FillBytesToFront 把数据截取/填充到指定长度
 func FillBytesToFront(data []byte, totalLen int) []byte {
@@ -23,14 +26,33 @@ func SHA256(data []byte) []byte {
 	return hash.Sum(nil)
 }
 
+//SliceByteWhenEncount 如果遇到了
 func SliceByteWhenEncount(d []byte, encount byte) []byte {
-
 	for i, bb := range d {
-
 		if bb != encount {
 			return d[i:]
 		}
 	}
-
 	return nil
+}
+
+//RandomString 产生随机字符串
+func RandomString(n int) string {
+	alphanum := "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+	var bytes = make([]byte, n)
+	rand.Read(bytes)
+	for i, b := range bytes {
+		bytes[i] = alphanum[b%byte(len(alphanum))]
+	}
+	return string(bytes)
+}
+
+//GenerateBytes 根据长度和每个byte的数据，产生bytes
+func GenerateBytes(length int, b byte) []byte {
+	bytes := []byte{}
+	for length != 0 {
+		bytes = append(bytes, b)
+		length--
+	}
+	return bytes
 }

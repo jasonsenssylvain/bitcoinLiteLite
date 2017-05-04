@@ -79,22 +79,22 @@ func (t *Transaction) MarshalBinary() ([]byte, error) {
 	return append(append(headerBinary, tool.FillBytesToFront(t.Signature, TransactionSignatureSize)...), t.Payload...), nil
 }
 
-func (t *Transaction) UnmarshalBinary(data []byte) error {
+func (t *Transaction) UnmarshalBinary(data []byte) ([]byte, error) {
 	buf := bytes.NewBuffer(data)
 
 	if len(data) < (TransactionHeaderSize + TransactionSignatureSize) {
-		return errors.New("data length error when unmarshal binary to transaction")
+		return nil, errors.New("data length error when unmarshal binary to transaction")
 	}
 
 	h := &TransactionHeader{}
 	if err := h.UnmarshalBinary(buf.Next(TransactionHeaderSize)); err != nil {
-		return err
+		return nil, err
 	}
 
 	t.Header = h
 	t.Signature = tool.SliceByteWhenEncount(buf.Next(TransactionSignatureSize), 0)
 	t.Payload = buf.Next(int(t.Header.PayloadLen))
-	return nil
+	return buf.Next(MaxInt), nil
 }
 
 func (t *TransactionHeader) MarshalBinary() ([]byte, error) {
@@ -114,8 +114,54 @@ func (t *TransactionHeader) UnmarshalBinary(data []byte) error {
 	t.From = tool.SliceByteWhenEncount(buf.Next(crypto.PublicKeyLen), 0)
 	t.To = tool.SliceByteWhenEncount(buf.Next(crypto.PublicKeyLen), 0)
 	t.PayloadHash = tool.SliceByteWhenEncount(buf.Next(PayloadHashSize), 0)
-	binary.Read(bytes.NewBuffer(buf.Next(4)), binary.LittleEndian, &t.Timestamp)
 	binary.Read(bytes.NewBuffer(buf.Next(4)), binary.LittleEndian, &t.PayloadLen)
+	binary.Read(bytes.NewBuffer(buf.Next(4)), binary.LittleEndian, &t.Timestamp)
 	binary.Read(bytes.NewBuffer(buf.Next(4)), binary.LittleEndian, &t.Nonce)
 	return nil
+}
+
+func (t *TransactionSlice) MarshalBinary() ([]byte, error) {
+	buf := new(bytes.Buffer)
+
+	for _, tr := range *t {
+		b, err := tr.MarshalBinary()
+		if err != nil {
+			return nil, err
+		}
+		buf.Write(b)
+	}
+	return buf.Bytes(), nil
+}
+
+func (t *TransactionSlice) UnmarshalBinary(data []byte) error {
+	d := data
+
+	for len(d) > TransactionHeaderSize+TransactionSignatureSize {
+		tr := &Transaction{}
+		remain, err := tr.UnmarshalBinary(d)
+		if err != nil {
+			return err
+		}
+		*t = append(*t, *tr)
+		d = remain
+	}
+	return nil
+}
+
+func (t TransactionSlice) Exists(newTr *Transaction) bool {
+	for _, tr := range t {
+		if reflect.DeepEqual(tr.Signature, newTr.Signature) {
+			return true
+		}
+	}
+	return false
+}
+
+func (t TransactionSlice) AddTransaction(newTr *Transaction) TransactionSlice {
+	for i, tr := range t {
+		if tr.Header.Timestamp >= newTr.Header.Timestamp {
+			return append(append(t[:i], *newTr), t[i:]...)
+		}
+	}
+	return append(t, *newTr)
 }
