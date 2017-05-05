@@ -57,7 +57,7 @@ func (t *Transaction) VerifyTransaction(powPrefix []byte) bool {
 	return reflect.DeepEqual(payloadHash, t.Header.PayloadHash) && consensus.CheckProofOfWork(powPrefix, h) && crypto.Verify(h, string(t.Signature), string(t.Header.From))
 }
 
-//GenerateNonce pow过程，系统必须不断计算，产生符合条件的nonce才能打包
+//GenerateNonce pow过程，这里是每次交易需要消耗一定量的计算
 func (t *Transaction) GenerateNonce(powPrefix []byte) uint32 {
 	for {
 		if consensus.CheckProofOfWork(powPrefix, t.Hash()) {

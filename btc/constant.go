@@ -8,3 +8,9 @@ const TransactionSignatureSize = 80
 const TransactionHeaderSize = crypto.PublicKeyLen + crypto.PublicKeyLen + PayloadHashSize + 4 + 4 + 4
 
 const MaxInt = int(^uint(0) >> 1)
+
+const BlockSignatureSize = 80
+const MerkleRootSize = 80
+const BlockHeaderSize = crypto.PublicKeyLen + BlockSignatureSize + MerkleRootSize + 4 + 4
+
+var BlockPowPrefix = 2 // 该参数应该随着难度调整
