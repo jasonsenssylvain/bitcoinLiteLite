@@ -57,6 +57,7 @@ func (bc *BlockChain) AppendBlock(b *Block) {
 
 func (bc *BlockChain) Run() {
 	newBlockChan := bc.GenerateBlock()
+	bc.newTicker(newBlockChan)
 	for {
 		select {
 		case tr := <-bc.TransactionChan:
@@ -96,9 +97,6 @@ func (bc *BlockChain) Run() {
 				bc.Block = bc.NewBlock()
 				bc.Block.Transactions = &diffTransactions
 
-				if bc.checkNeedToPackageBlock() {
-					newBlockChan <- *(bc.Block)
-				}
 			}
 		}
 	}
@@ -133,6 +131,30 @@ func (bc *BlockChain) checkNeedToPackageBlock() bool {
 		return true
 	}
 	return false
+}
+
+// 3. 当前交易数量无所谓，但是距离上一个打包已经十分钟了
+func (bc *BlockChain) newTicker(newBlockChan chan Block) {
+	go func() {
+		timer := time.NewTicker(10 * time.Minute)
+		for {
+			select {
+			case <-timer.C:
+				l := len(*(bc.BlockSlice))
+				if len(*(bc.Block.Transactions)) > 0 {
+					if l == 0 {
+						newBlockChan <- *(bc.Block)
+					} else {
+						lastBlock := (*(bc.BlockSlice))[l-1]
+						now := uint32(time.Now().Unix())
+						if (now - lastBlock.Header.Timestamp) > 10*60000 {
+							newBlockChan <- *(bc.Block)
+						}
+					}
+				}
+			}
+		}
+	}()
 }
 
 //GenerateBlock 产生新的block，即 打包
