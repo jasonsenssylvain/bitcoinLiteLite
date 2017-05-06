@@ -3,6 +3,7 @@ package tool
 import (
 	"crypto/rand"
 	"crypto/sha256"
+	"time"
 )
 
 //FillBytesToFront 把数据截取/填充到指定长度
@@ -55,4 +56,14 @@ func GenerateBytes(length int, b byte) []byte {
 		length--
 	}
 	return bytes
+}
+
+//Timeout 定时任务，时间到触发channel
+func Timeout(t time.Duration) chan bool {
+	i := make(chan bool)
+	go func() {
+		time.Sleep(t)
+		i <- true
+	}()
+	return i
 }

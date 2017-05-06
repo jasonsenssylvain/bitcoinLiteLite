@@ -1,4 +1,4 @@
-package btc
+package block
 
 import "github.com/jasoncodingnow/bitcoinLiteLite/crypto"
 
@@ -13,4 +13,5 @@ const BlockSignatureSize = 80
 const MerkleRootSize = 80
 const BlockHeaderSize = crypto.PublicKeyLen + BlockSignatureSize + MerkleRootSize + 4 + 4
 
-var BlockPowPrefix = 2 // 该参数应该随着难度调整
+var BlockPowPrefix = 2       // 该参数应该随着难度调整，打包的难度
+var TransactionPowPrefix = 1 // 交易的难度，这个目前应该没什么太大用处
