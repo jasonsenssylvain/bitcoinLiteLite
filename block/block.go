@@ -3,6 +3,7 @@ package block
 import (
 	"bytes"
 	"encoding/binary"
+	"fmt"
 	"time"
 
 	"reflect"
@@ -32,6 +33,7 @@ func NewBlock(prevBlock []byte) *Block {
 	b := &Block{}
 	b.Header = &BlockHeader{PrevBlock: prevBlock}
 	b.Header.Timestamp = uint32(time.Now().Unix())
+	b.Transactions = &TransactionSlice{}
 	return b
 }
 
@@ -58,6 +60,19 @@ func (b *Block) GenerateNonce(powPrefix []byte) uint32 {
 func (b *Block) VerifyBlock(powPrefix []byte) bool {
 	h := b.Hash()
 	m := b.GenrateMerkleRoot()
+
+	//test
+	if !reflect.DeepEqual(m, b.Header.MerkleRoot) {
+		fmt.Println("m not equal to b.Header.MerkleRoot")
+		fmt.Println("m is %x", m)
+		fmt.Println("m is %x", b.Header.MerkleRoot)
+	}
+	if !consensus.CheckProofOfWork(powPrefix, h) {
+		fmt.Println("pow error")
+	}
+	if !crypto.Verify(h, string(b.Signature), string(b.Header.Origin)) {
+		fmt.Println("verify err")
+	}
 
 	return reflect.DeepEqual(m, b.Header.MerkleRoot) && consensus.CheckProofOfWork(powPrefix, h) && crypto.Verify(h, string(b.Signature), string(b.Header.Origin))
 }

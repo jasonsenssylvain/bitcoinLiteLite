@@ -25,7 +25,7 @@ type TransactionHeader struct {
 }
 
 type Transaction struct {
-	Header    *TransactionHeader
+	Header    TransactionHeader
 	Signature []byte
 	Payload   []byte
 }
@@ -34,7 +34,7 @@ type TransactionSlice []Transaction
 
 //NewTransaction create new transaction
 func NewTransaction(from, to, payload []byte) *Transaction {
-	t := &Transaction{Header: &TransactionHeader{From: from, To: to}, Payload: payload}
+	t := &Transaction{Header: TransactionHeader{From: from, To: to}, Payload: payload}
 	t.Header.Timestamp = uint32(time.Now().Unix())
 	t.Header.PayloadHash = tool.SHA256(payload)
 	t.Header.PayloadLen = uint32(len(payload))
@@ -86,7 +86,7 @@ func (t *Transaction) UnmarshalBinary(data []byte) ([]byte, error) {
 		return nil, errors.New("data length error when unmarshal binary to transaction")
 	}
 
-	h := &TransactionHeader{}
+	h := TransactionHeader{}
 	if err := h.UnmarshalBinary(buf.Next(TransactionHeaderSize)); err != nil {
 		return nil, err
 	}

@@ -6,7 +6,7 @@ var key *crypto.Key
 
 //GetKey 获取当前用户私钥公钥
 func GetKey() *crypto.Key {
-	if key.PrivateKey == "" {
+	if key == nil || key.PrivateKey == "" {
 		key = crypto.GenerateKey()
 	}
 	return key
