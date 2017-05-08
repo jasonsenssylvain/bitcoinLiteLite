@@ -19,4 +19,16 @@ func Test_All(t *testing.T) {
 	result := Verify([]byte(message), signature, keypair.PublicKey)
 	fmt.Println(result)
 
+	// a := 1
+
+	// buf := bytes.Buffer{}
+	// binary.Write(&buf, binary.BigEndian, a)
+	// fmt.Println(buf.Bytes())
+
+	// var newB = make([]byte, 4)
+	// binary.LittleEndian.PutUint32(newB, uint32(a))
+	// fmt.Println(newB)
+
+	// b := int(binary.LittleEndian.Uint32(newB))
+	// fmt.Println(b)
 }

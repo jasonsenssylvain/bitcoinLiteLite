@@ -31,4 +31,31 @@ func Test_Block(t *testing.T) {
 
 	verifyResult := b.VerifyBlock(prefixMatch)
 	fmt.Println(verifyResult)
+
+	blockBytes, err := b.MarshalBinary()
+	fmt.Println("len of blockBytes")
+	fmt.Println(len(blockBytes))
+	if err != nil {
+		fmt.Println(err)
+	}
+	newBlock := NewBlock(nil)
+	newBlock.UnmarshalBinary(blockBytes)
+
+	//对比
+	fmt.Println("block Merkle Root ")
+	fmt.Println(b.Header.MerkleRoot)
+	fmt.Println("newBlock Merkle Root ")
+	fmt.Println(newBlock.Header.MerkleRoot)
+
+	fmt.Println("block Origin ")
+	fmt.Println(len(b.Header.Origin))
+	fmt.Println(b.Header.Origin)
+	fmt.Println("newBlock Origin ")
+	fmt.Println(newBlock.Header.Origin)
+
+	fmt.Println("block PrevBlock ")
+	fmt.Println(len(b.Header.PrevBlock))
+	fmt.Println(b.Header.PrevBlock)
+	fmt.Println("newBlock PrevBlock ")
+	fmt.Println(newBlock.Header.PrevBlock)
 }

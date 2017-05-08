@@ -1,6 +1,8 @@
 package blockchainuser
 
-import "github.com/jasoncodingnow/bitcoinLiteLite/crypto"
+import (
+	"github.com/jasoncodingnow/bitcoinLiteLite/crypto"
+)
 
 var key *crypto.Key
 
@@ -10,4 +12,8 @@ func GetKey() *crypto.Key {
 		key = crypto.GenerateKey()
 	}
 	return key
+}
+
+func SetKey(k *crypto.Key) {
+	key = k
 }

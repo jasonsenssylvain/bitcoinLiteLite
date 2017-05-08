@@ -3,6 +3,8 @@ package tool
 import (
 	"crypto/rand"
 	"crypto/sha256"
+	"net"
+	"os"
 	"time"
 )
 
@@ -66,4 +68,17 @@ func Timeout(t time.Duration) chan bool {
 		i <- true
 	}()
 	return i
+}
+
+//GetIpAddress 获取当前ip
+func GetIpAddress() ([]string, error) {
+	name, err := os.Hostname()
+	if err != nil {
+		return nil, err
+	}
+	addrs, err := net.LookupHost(name)
+	if err != nil {
+		return nil, err
+	}
+	return addrs, nil
 }

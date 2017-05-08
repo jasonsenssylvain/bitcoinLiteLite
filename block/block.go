@@ -66,15 +66,18 @@ func (b *Block) VerifyBlock(powPrefix []byte) bool {
 		fmt.Println("m not equal to b.Header.MerkleRoot")
 		fmt.Println("m is %x", m)
 		fmt.Println("m is %x", b.Header.MerkleRoot)
+		fmt.Println("MerkleRoot validate error")
+		return false
 	}
 	if !consensus.CheckProofOfWork(powPrefix, h) {
 		fmt.Println("pow error")
+		return false
 	}
 	if !crypto.Verify(h, string(b.Signature), string(b.Header.Origin)) {
 		fmt.Println("verify err")
+		return false
 	}
-
-	return reflect.DeepEqual(m, b.Header.MerkleRoot) && consensus.CheckProofOfWork(powPrefix, h) && crypto.Verify(h, string(b.Signature), string(b.Header.Origin))
+	return true
 }
 
 func (b *Block) Sign(privateKey string) []byte {
@@ -165,8 +168,8 @@ func (h *BlockHeader) MarshalBinary() []byte {
 func (h *BlockHeader) UnmarshalBinary(data []byte) error {
 	buf := bytes.NewBuffer(data)
 	h.Origin = tool.SliceByteWhenEncount(buf.Next(crypto.PublicKeyLen), 0)
-	h.Origin = tool.SliceByteWhenEncount(buf.Next(BlockSignatureSize), 0)
-	h.Origin = tool.SliceByteWhenEncount(buf.Next(MerkleRootSize), 0)
+	h.PrevBlock = tool.SliceByteWhenEncount(buf.Next(BlockSignatureSize), 0)
+	h.MerkleRoot = tool.SliceByteWhenEncount(buf.Next(MerkleRootSize), 0)
 	binary.Read(bytes.NewBuffer(buf.Next(4)), binary.LittleEndian, &h.Timestamp)
 	binary.Read(bytes.NewBuffer(buf.Next(4)), binary.LittleEndian, &h.Nonce)
 	return nil

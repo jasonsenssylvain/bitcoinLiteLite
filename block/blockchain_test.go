@@ -43,13 +43,13 @@ func Test_BlockChain(t *testing.T) {
 
 	b.Run()
 	fmt.Println("bc start run")
-	b.TransactionChan <- t1
-	b.TransactionChan <- t2
-	b.TransactionChan <- t3
-	b.TransactionChan <- t4
-	b.TransactionChan <- t5
-	b.TransactionChan <- t6
-	b.TransactionChan <- t7
+	b.TransactionChan <- *t1
+	b.TransactionChan <- *t2
+	b.TransactionChan <- *t3
+	b.TransactionChan <- *t4
+	b.TransactionChan <- *t5
+	b.TransactionChan <- *t6
+	b.TransactionChan <- *t7
 
 	// before test, should change block time span to 10s
 	time.Sleep(20 * time.Second)
