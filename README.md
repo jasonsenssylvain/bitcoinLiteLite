@@ -15,10 +15,10 @@ a simple crypto currency implementation like bitcoin
   
 ***
 
-##### 运行
+#### 运行
 
-###### 启动第一个节点
-目前暂定首个节点 端口是 8091,在代码 https://github.com/jasoncodingnow/bitcoinLiteLite/blob/master/main.go L 110
+目前暂定首个节点 端口是 8091,在代码 https://github.com/jasoncodingnow/bitcoinLiteLite/blob/master/main.go L 110，请自行修改为当前机器的局域网地址
+
 ```GO
 git clone https://github.com/jasoncodingnow/bitcoinLiteLite.git
 cd github.com/jasoncodingnow/bitcoinLiteLite
