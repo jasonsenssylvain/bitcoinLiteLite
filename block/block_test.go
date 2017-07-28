@@ -9,6 +9,7 @@ import (
 )
 
 func Test_Block(t *testing.T) {
+
 	fmt.Println("Test_Block start")
 	key := crypto.GenerateKey()
 	t1 := NewTransaction([]byte(key.PublicKey), nil, []byte(tool.RandomString(100)))
